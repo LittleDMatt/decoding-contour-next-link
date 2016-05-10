@@ -689,8 +689,29 @@ if __name__ == '__main__':
         status.sensorBGL / 18.016,
         time.strftime( "%a, %d %b %Y %H:%M:%S +0000", status.sensorBGLTimestamp ) )
     print "BGL trend: {0}".format( status.trendArrow )
-    print "Current basal rate: {0:.3f}U".format( status.currentBasalRate )
+    print "Planned basal rate: {0:.3f}U".format( status.currentBasalRate )
+    print "Temp basal rate: {0:.3f}U".format( status.tempBasalRate/10000 )
+    print "Temp basal percent: {0}%".format( status.tempBasalPercentage )
+    print "Temp basal Remaining Time: {0} mins".format( status.tempBasalMinutesRemaining)
     print "Units remaining: {0:.3f}U".format( status.insulinUnitsRemaining )
     print "Battery remaining: {0}%".format( status.batteryLevelPercentage )
-    #print binascii.hexlify( mt.getTempBasalStatus().responsePayload )
+    print binascii.hexlify( mt.getTempBasalStatus().responsePayload )
     #print binascii.hexlify( mt.getBolusesStatus().responsePayload )
+	#"2016-02-03T20:57:17"
+
+epoch_time = int(time.mktime(time.strptime( time.strftime( "%Y-%m-%d %H:%M:%S", status.sensorBGLTimestamp ), '%Y-%m-%d %H:%M:%S')) - time.timezone ) 
+epoch_time = epoch_time - time.localtime(epoch_time).tm_isdst*3600
+
+with open('latest_sg.json','w') as text_file:
+    text_file.write('"value":"{0}","sgv":{0},"type":"sgv","dateString":"{1}","date":{2}'.format( status.sensorBGL, time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime(epoch_time)) , epoch_time*1000 ))
+
+if status.tempBasalMinutesRemaining > 0:	
+    if status.tempBasalPercentage > 0:
+        with open('latest_basal.json','w') as text_file:
+            text_file.write('"value":"ChangeProgrammedTempBasalPercent","eventType":"Temp Basal","duration":{0},"percent":{1},"enteredBy":"pump","dateString":"{2}","created_at":"{3}","date":{4}'.format( int(status.tempBasalMinutesRemaining), status.tempBasalPercentage-100, time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(epoch_time)), time.strftime("%Y-%m-%dT%H:%M:%S.000+0"+str(time.localtime(epoch_time).tm_isdst)+":00", time.localtime(epoch_time)) , epoch_time*1000 ))
+    else:
+        with open('latest_basal.json','w') as text_file:
+            text_file.write('"value":"ChangeProgrammedTempBasal","eventType":"Temp Basal","duration":{0},"absolute":{1},"enteredBy":"pump","dateString":"{2}","created_at":"{3}","date":{4}'.format( int(status.tempBasalMinutesRemaining), status.tempBasalRate/10000, time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(epoch_time)), time.strftime("%Y-%m-%dT%H:%M:%S.000+0"+str(time.localtime(epoch_time).tm_isdst)+":00", time.localtime(epoch_time)) , epoch_time*1000 ))
+	
+	
+	

@@ -26,6 +26,14 @@ KEY for serial 1055866: 57833334130906a587b7a0437bc28a69
 
 Now whenever you run `read_minimed_next24.py`, the script will get the config from the config database and communicate with your pump.
 ```
+Added code as proof of concept ONLY - 640g direct to NightScout
+Indebted to Lennart Goerdhart for https://github.com/pazaan/decoding-contour-next-link"
+Please use with caution. There'll be bugs here...
+Known Issues: Tons - this is thrown together...
+You run / use any of this at your own risk.
+Thank you.
+
+```
 $ python read_minimed_next24.py
 # Opening device
 Manufacturer: Bayer HealthCare LLC
